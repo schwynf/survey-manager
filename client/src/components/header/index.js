@@ -1,12 +1,13 @@
 //dependencies
 import React, { useState, useEffect } from 'react';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom'
+//components
+import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { useHistory } from 'react-router-dom'
-//components
+//css
 import './index.css'
 
 
@@ -29,7 +30,6 @@ function Header(props) {
     }
 
     useEffect(() => {
-
     }, [])
 
     return (

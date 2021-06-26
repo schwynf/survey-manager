@@ -15,7 +15,6 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import Typography from '@material-ui/core/Typography';
 import Container from '@material-ui/core/Container';
 import Header from '../header/index';
-
 //css
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -51,7 +50,6 @@ function Login(props) {
     const classes = useStyles();
 
     useEffect(() => {
-        console.log(props.user)
         if(props.user){
             history.push('/surveys2')
         }
@@ -72,12 +70,9 @@ function Login(props) {
         props.dispatch({type:'ADD_USER', payload: user})
         history.push('/surveys2')
     }
-
-    let data = [<div>schwyn</div>,<h1>Francis</h1>]
     return (
         <>
             <Header></Header>
-            {data}
             <Container component="main" maxWidth="xs" className={classes.root}>
                 <CssBaseline />
                 <div className={classes.paper}>

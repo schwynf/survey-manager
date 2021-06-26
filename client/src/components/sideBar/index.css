@@ -1,5 +1,23 @@
+#side-bar {
+    background-color: white;
+    height: 92vh;
+    border-right: 4px solid rgb(247, 245, 245);
+}
+
+#inner-side-bar {
+    height: 92vh;
+    border-right: 2px solid rgb(247, 245, 245);
+    height: 100%;
+}
+
+.side-icons {
+    justify-content: center;
+    display: flex;
+    margin-top: 25%;
+}
+
 @media only screen and (max-width: 960px) {
-    #side-bar{
-        display:none;
+    #side-bar {
+        display: none;
     }
 }

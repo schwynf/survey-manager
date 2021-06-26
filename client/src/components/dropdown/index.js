@@ -1,5 +1,7 @@
+//dependencies
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+//components
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import FormControl from '@material-ui/core/FormControl';
@@ -7,6 +9,8 @@ import Select from '@material-ui/core/Select';
 import Button from '@material-ui/core/Button';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+//css
+import './index.css'
 
 const useStyles = makeStyles((theme) => ({
     button: {
@@ -35,10 +39,6 @@ export default function ControlledOpenSelect(props) {
     const handleOpen = () => {
         setOpen(true);
     };
-    const check = (event) => {
-        event.stopPropagation();
-        console.log(event.target.id)
-    }
 
     return (
         <>
@@ -65,7 +65,7 @@ export default function ControlledOpenSelect(props) {
             </FormControl>
             <div></div>
             {(props.view) ? (<></>) : (<>
-                <CreateIcon fontSize="large" id={props.index} onClick={props.editQuestion} style={{ color: "green", float: "center", clear: "both" }}>s</CreateIcon>
+                <CreateIcon fontSize="large" id={props.index} onClick={props.editQuestion} style={{ color: "green"}}></CreateIcon>
                 <DeleteForeverIcon fontSize="large" id={props.index} onClick={props.deleteQuestion}></DeleteForeverIcon>
             </>)}
         </>

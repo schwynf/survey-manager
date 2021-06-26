@@ -1,43 +1,75 @@
 //dependencies
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+import { connect } from 'react-redux';
+import { useHistory } from 'react-router-dom'
+//components
 import Typography from '@material-ui/core/Typography';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Link from '@material-ui/core/Link';
-import HomeIcon from '@material-ui/icons/Home';
-import StarIcon from '@material-ui/icons/Star';
-import LocalOfferIcon from '@material-ui/icons/LocalOffer';
 import Tabs from '@material-ui/core/Tabs';
 import Tab from '@material-ui/core/Tab';
 import Paper from '@material-ui/core/Paper';
 import Grid from '@material-ui/core/Grid';
-import AccountCircleIcon from '@material-ui/icons/AccountCircle';
 import TextField from '@material-ui/core/TextField';
-import AddCircleIcon from '@material-ui/icons/AddCircle';
+import AddIcon from '@material-ui/icons/Add';
 import Button from '@material-ui/core/Button';
-//components
-
+import RemoveIcon from '@material-ui/icons/Remove';
+import CreateIcon from '@material-ui/icons/Create';
+import ScrollArrow from '../scrollArrow/index.js'
 import Checkbox2 from '../checkbox/index.js';
+import Dropdown from '../dropdown/index.js';
+import Header from '../header/index.js';
+import Footer from '../footer/index.js';
 import SideBar from '../sideBar/index.js';
 import TextBox from '../textBox/index.js';
+import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
+import ArrowDropDownCircleIcon from '@material-ui/icons/ArrowDropDownCircle';
+import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
+//css
 import './index.css'
+//images
+import EssayImage from '../../images/essay.jpg';
+
+const useStyles = makeStyles((theme) => ({
+    root: {
+        flexGrow: 1,
+    },
+    paper: {
+        padding: theme.spacing(2),
+        textAlign: 'center',
+        color: theme.palette.text.secondary,
+    },
+}));
+
 
 function Surveys(props) {
 
-    const [choiceName, setChoiceName] = useState("Create");
-    const [value, setValue] = React.useState(2);
-    const [checkboxQuestions, setCheckboxQuestions] = React.useState([{ name: "checkbox1" }, { name: "checkbox2" }, { name: "checkbox3" }, { name: "checkbox4" }]);
-    const [dropdownQuestions, setDropdownQuestions] = React.useState([{ name: "dropdownbox1" }, { name: "dropdownbox2" }, { name: "dropdownbox3" }, { name: "dropdownbox4" }]);
-    //get surveys from local storage
+    const classes = useStyles();
+
+    const [choiceName, setChoiceName] = useState("Overview");
+    const [title, setTitle] = useState("");
+    const [question, setQuestion] = useState("");
+    const [surveyIndex, setSurveyIndex] = useState(-1);
+    const [questionIndex, setQuestionIndex] = useState(-1);
+    const [value, setValue] = React.useState(1);
+    const [checkboxQuestions, setCheckboxQuestions] = React.useState({ checkbox1: "", checkbox2: "", checkbox3: "", checkbox4: "" });
+    const [dropdownQuestions, setDropdownQuestions] = React.useState({ dropdownbox1: "", dropdownbox2: "", dropdownbox3: "" });
+    const [textboxQuestions, setTextboxQuestions] = React.useState({ textbox1: "" });
     const [surveys, setSurveys] = React.useState([]);
+    const history = useHistory();
+
+    const checkboxNames = ["checkbox1", "checkbox2", "checkbox3", "checkbox4"];
+    const dropdownNames = ["dropdownbox1", "dropdownbox2", "dropdownbox3"];
 
     useEffect(() => {
+        if (!props.user) {
+            history.push('/login')
+        }
+    }, [props.user, props.questions])
 
-    }, [])
     const handleChange = (event, newValue) => {
         setValue(newValue);
-        console.log(newValue);
-        console.log(event.target.innerText)
     };
 
     const checkSurveyMode = (event) => {
@@ -53,83 +85,262 @@ function Surveys(props) {
         setChoiceName(choice);
     }
 
+    const handleChangeCheckbox = (event) => {
+        setCheckboxQuestions({ ...checkboxQuestions, [event.target.name]: event.target.value })
+    }
+    const handleChangeTextbox = (event) => {
+        setTextboxQuestions({ textbox1: event.target.value })
+    }
+    const handleChangeDropdown = (event) => {
+        setDropdownQuestions({ ...dropdownQuestions, [event.target.name]: event.target.value })
+    }
+    const editQuestion = (event) => {
+        if (!event.target.id) {
+            return
+        }
+        let choices = props.questions[parseInt(event.target.id) - 1].choices;
+        let type = props.questions[parseInt(event.target.id) - 1].type;
+        let query = props.questions[parseInt(event.target.id) - 1].question;
+        if (type === "checkbox") {
+            setValue(0);
+            setCheckboxQuestions({ checkbox1: choices[0], checkbox2: choices[1], checkbox3: choices[2], checkbox4: choices[3] });
+            setQuestionIndex(parseInt(event.target.id) - 1);
+            setQuestion(query);
+        } else if (type === "dropdown") {
+            setValue(2);
+            setDropdownQuestions({ dropdownbox1: choices[0], dropdownbox2: choices[1], dropdownbox3: choices[2] });
+            setQuestionIndex(parseInt(event.target.id) - 1);
+            setQuestion(query);
+        } else {
+            setValue(1);
+            setQuestionIndex(parseInt(event.target.id) - 1);
+            setQuestion(query);
+        }
+
+    }
+    const deleteQuestion = (event) => {
+        console.log(event.target.id)
+        if (!event.target.id) {
+            return
+        }
+        let data = props.questions.filter((data, index) => {
+            return index !== parseInt(event.target.id - 1)
+        })
+        props.dispatch({ type: 'ADD_QUESTION', payload: data })
+    }
+
+    const handleBuild = () => {
+        let questionObject;
+        let newTempQuestions;
+        if (value === 0) {
+            questionObject = {
+                type: "checkbox",
+                question: question,
+                choices: [checkboxQuestions.checkbox1, checkboxQuestions.checkbox2, checkboxQuestions.checkbox3, checkboxQuestions.checkbox4]
+            };
+        } else if (value === 2) {
+            questionObject = {
+                type: "dropdown",
+                question: question,
+                choices: [dropdownQuestions.dropdownbox1, dropdownQuestions.dropdownbox2, dropdownQuestions.dropdownbox3]
+            };
+        } else {
+            questionObject = {
+                type: "textbox",
+                question: question
+            };
+        }
+        if (questionIndex === -1) {
+            newTempQuestions = [...props.questions, questionObject];
+            props.dispatch({ type: 'ADD_QUESTION', payload: newTempQuestions });
+        } else {
+            newTempQuestions = [...props.questions]
+            newTempQuestions[questionIndex] = questionObject;
+            props.dispatch({ type: 'EDIT_QUESTION', payload: newTempQuestions });
+            setQuestionIndex(-1);
+        }
 
 
+
+    }
+    const handleSave = () => {
+        console.log(props.questions)
+        if(props.questions.length < 1){
+            return
+        }
+        let user;
+        let survey;
+        if (props.questions.length && surveyIndex === -1) {
+            user = JSON.parse(localStorage.getItem('user'));
+            survey = { title, questions: props.questions }
+            user.surveys.push(survey)
+            localStorage.setItem('user', JSON.stringify(user));
+            props.dispatch({ type: 'ADD_USER', payload: user });
+            props.dispatch({ type: 'DEFAULT_QUESTIONS' });
+            setCheckboxQuestions({ checkbox1: "", checkbox2: "", checkbox3: "", checkbox4: "" });
+            setDropdownQuestions({ dropdownbox1: "", dropdownbox2: "", dropdownbox3: "" });
+            setTextboxQuestions({ textbox1: "" });
+            setTitle("");
+            setQuestion("");
+            setSurveyIndex(-1);
+        }
+        if (props.questions.length && surveyIndex > -1) {
+            user = JSON.parse(localStorage.getItem('user'));
+            survey = { title, questions: props.questions };
+            user.surveys[surveyIndex] = survey;
+        }
+        localStorage.setItem('user', JSON.stringify(user));
+        props.dispatch({ type: 'ADD_USER', payload: user });
+        props.dispatch({ type: 'DEFAULT_QUESTIONS' });
+        setCheckboxQuestions({ checkbox1: "", checkbox2: "", checkbox3: "", checkbox4: "" });
+        setDropdownQuestions({ dropdownbox1: "", dropdownbox2: "", dropdownbox3: "" });
+        setTextboxQuestions({ textbox1: "" });
+        setTitle("");
+        setQuestion("");
+        setSurveyIndex(-1);
+    }
+
+    const handleClear = () => {
+        setCheckboxQuestions({ checkbox1: "", checkbox2: "", checkbox3: "", checkbox4: "" });
+        setDropdownQuestions({ dropdownbox1: "", dropdownbox2: "", dropdownbox3: "" });
+        setTextboxQuestions({ textbox1: "" });
+        setTitle("");
+        setQuestion("");
+        setQuestionIndex(-1);
+        props.dispatch({ type: 'DEFAULT_QUESTIONS' });
+    }
+    const mapSurvey = (data, index) => {
+        if (data.type == "checkbox") {
+            return <Checkbox2 title={data.question} deleteQuestion={deleteQuestion} editQuestion={editQuestion} index={index} choice={data.choices}></Checkbox2>
+        }
+        if (data.type == "dropdown") {
+            return <Dropdown title={data.question} index={index} deleteQuestion={deleteQuestion} editQuestion={editQuestion} choice={data.choices}></Dropdown>
+        }
+        if (data.type == "textbox") {
+            return (<><h3>{index + ") " + data.question}</h3>
+                <div style={{ justifyContent: "center", textAlign: "center" }}>
+                    <TextField onClick={(event) => { console.log("edit") }} id="outlined-basic" style={{ marginLeft: "40px", width: "50%", textAlign: "center" }} name="textfield" />
+                    <div></div>
+                    <CreateIcon fontSize="large" onClick={editQuestion} id={index} style={{ marinLeft: "40px", color: "green", float: "center", clear: "both" }}></CreateIcon>
+                    <DeleteForeverIcon style={{ fontSize: "35px" }} id={index} onClick={deleteQuestion}></DeleteForeverIcon>
+                </div></>)
+        }
+    }
+
+    const editSurvey = (event) => {
+        if (!event.target.id) {
+            return
+        }
+        let questions = props.user.surveys[parseInt(event.target.id)].questions;
+        setQuestionIndex(-1)
+        setSurveyIndex(parseInt(event.target.id))
+        setChoiceName("Create");
+        setTitle(props.user.surveys[parseInt(event.target.id)].title)
+        props.dispatch({ type: 'ADD_QUESTION', payload: questions });
+    }
+    const deleteSurvey = (event) => {
+        if (!event.target.id) {
+            return
+        }
+        console.log(event.target.id)
+        let index = parseInt(event.target.id);
+        let user = JSON.parse(localStorage.getItem('user'));
+        user.surveys.splice(parseInt(index), index + 1);
+        console.log(user.surveys)
+        localStorage.setItem('user', JSON.stringify(user));
+        props.dispatch({ type: 'ADD_USER', payload: user })
+
+    }
+    const mapSurveys = () => {
+        let data = [];
+        if (props.user && props.user.surveys.length) {
+            props.user.surveys.forEach((survey, index) => {
+                let surveyTitleShort = survey.title.slice(0, 10) + "...";
+                data.push(<>
+                    <Grid item xs={6} sm={3} className="enlarge">
+                        <Paper className={classes.paper} id={index} style={{ backgroundColor: "white", margin: "auto", width: "130px", minHeight: "200px" }}>
+                            <div>{surveyTitleShort}</div>
+                            <img onClick={(event) => { window.location.href = "/view/" + index }} id={index} src={EssayImage} style={{ marginTop: 10, height: "75%", width: "100%" }}></img>
+                            <div style={{ display: "flex" }}>
+                                <CreateIcon onClick={editSurvey} id={index} style={{ margin: "auto", color: "green" }}></CreateIcon>
+                                <DeleteForeverIcon id={index} onClick={deleteSurvey} style={{ margin: "auto" }} ></DeleteForeverIcon>
+                            </div>
+                        </Paper>
+                    </Grid>
+                </>)
+            })
+        } else {
+            data = <h1 style={{ display: "flex", justifyContent: "center" }}>No Surveys To Display</h1>
+        }
+        return data;
+    }
     const checkMode = () => {
-        console.log(value)
         if (value === 0) {
             return (
                 <>
-                    <div style={{ display: "flex", justifyContent: "center", textAlign: "center" }}>
-                        <TextField id="outlined-basic" label="Question" variant="outlined" style={{ width: "60%" }} /><br></br>
-                    </div>
-                    {checkboxQuestions.length ? (
-                        checkboxQuestions.map((box) => (
-                            <TextBox></TextBox>
-                        ))
-                    ) : (<></>)}
-                    {/* add */}
+                    <TextBox name={checkboxNames[0]} value={checkboxQuestions.checkbox1} handleChangeTextbox={handleChangeCheckbox}>
+                        <CheckBoxOutlineBlankIcon className="checkbox-icon" style={{ marginTop: "8px", marginRight: "10px" }}></CheckBoxOutlineBlankIcon>
+                    </TextBox>
+                    <TextBox name={checkboxNames[1]} value={checkboxQuestions.checkbox2} handleChangeTextbox={handleChangeCheckbox}>
+                        <CheckBoxOutlineBlankIcon className="checkbox-icon" style={{ marginTop: "8px", marginRight: "10px" }}></CheckBoxOutlineBlankIcon>
+                    </TextBox>
+                    <TextBox name={checkboxNames[2]} value={checkboxQuestions.checkbox3} handleChangeTextbox={handleChangeCheckbox}>
+                        <CheckBoxOutlineBlankIcon className="checkbox-icon" style={{ marginTop: "8px", marginRight: "10px" }}></CheckBoxOutlineBlankIcon>
+                    </TextBox>
+                    <TextBox name={checkboxNames[3]} value={checkboxQuestions.checkbox4} handleChangeTextbox={handleChangeCheckbox}>
+                        <CheckBoxOutlineBlankIcon className="checkbox-icon" style={{ marginTop: "8px", marginRight: "10px" }}></CheckBoxOutlineBlankIcon>
+                    </TextBox>
                     <div style={{ display: "flex", justifyContent: "center" }}>
-                        <AddCircleIcon></AddCircleIcon>
+                        <RemoveIcon></RemoveIcon>
+                        <AddIcon></AddIcon>
                     </div>
                 </>
             )
-        } else if (value === 2) {
+        }
+        if (value === 2) {
             return (
                 <>
-                    <div style={{ display: "flex", justifyContent: "center", textAlign: "center" }}>
-                        <TextField id="outlined-basic" label="Question" variant="outlined" style={{ width: "60%" }} /><br></br>
-                    </div>
-                    {dropdownQuestions.length ? (
-                        dropdownQuestions.map((box) => (
-                            <TextBox name={box.name}></TextBox>
-                        ))
-                    ) : (<></>)}
-                     <div style={{ display: "flex", justifyContent: "center" }}>
-                        <AddCircleIcon></AddCircleIcon>
+                    <TextBox name={dropdownNames[0]} value={dropdownQuestions.dropdownbox1} handleChangeTextbox={handleChangeDropdown}>
+                        <ArrowDropDownCircleIcon className="checkbox-icon" style={{ marginTop: "8px", marginRight: "10px" }}></ArrowDropDownCircleIcon>
+                    </TextBox>
+                    <TextBox name={dropdownNames[1]} value={dropdownQuestions.dropdownbox2} handleChangeTextbox={handleChangeDropdown}>
+                        <ArrowDropDownCircleIcon className="checkbox-icon" style={{ marginTop: "8px", marginRight: "10px" }}></ArrowDropDownCircleIcon>
+                    </TextBox>
+                    <TextBox name={dropdownNames[2]} value={dropdownQuestions.dropdownbox3} handleChangeTextbox={handleChangeDropdown}>
+                        <ArrowDropDownCircleIcon className="checkbox-icon" style={{ marginTop: "8px", marginRight: "10px" }}></ArrowDropDownCircleIcon>
+                    </TextBox>
+                    <div style={{ display: "flex", justifyContent: "center" }}>
+                        <RemoveIcon></RemoveIcon>
+                        <AddIcon></AddIcon>
                     </div>
                 </>
-            )
-        } else {
-            return (
-                <div style={{ display: "flex", justifyContent: "center", textAlign: "center" }}>
-                    <TextField id="outlined-basic" label="Question" variant="outlined" style={{ width: "60%" }} /><br></br>
-                </div>
             )
         }
     }
 
-
-
-
-
-
-
     return (
         <>
-            <div style={{ width: "100%", height: "6vh", color: "white", backgroundColor: "black" }}>
-                <img style={{ height: "5vh", marginTop: "5px" }} src="https://sotellus.vercel.app/static/media/soTellUsSiteLogo.731a48c2.png"></img>
-                <div style={{ float: "right", marginRight: "20px", marginTop: "5px" }}>
-                    <AccountCircleIcon></AccountCircleIcon>
-                </div>
+            <Header></Header>
+            <div id="top-nav" style={{ backgroundColor: "yellow", justifyContent: "center", textAlign: "center" }}>
+                <div onClick={() => { setChoiceName("Create") }} style={{ backgroundColor: "yellow", margin: "auto", textAlign: "center" }}>Create</div>
+                <div style={{ margin: "auto", width: "150px", height: "20px", borderLeft: "2px solid black", borderRight: "2px solid black", textAlign: "center" }}>Home</div>
+                <div onClick={() => { setChoiceName("Surveys") }} style={{ margin: "auto" }}>View</div>
             </div>
             <Grid container spacing={0}>
                 <SideBar checkSurveyMode={checkSurveyMode}></SideBar>
-                <Grid item xs={12} md={10} p={10} style={{ backgroundColor: "rgb(218, 216, 216)", minHeight: "94vh" }}>
+                <Grid id="grid-box-content" item xs={12} md={10} p={10} style={{ backgroundColor: "rgb(218, 216, 216)", minHeight: "94vh" }}>
                     <Breadcrumbs aria-label="breadcrumb" mb={5}>
                         <Link color="inherit" href="/">
                             Dashboard
                         </Link>
                         <Typography color="textPrimary">Surveys</Typography>
                     </Breadcrumbs>
-                    <div style={{ padding: "5px" }}>
+                    <div className="survey-div">
                         {(choiceName === "Create") ?
                             (<>
-
                                 {/* tabs*/}
-
-                                <Paper elevation={3} style={{ marginBottom: "10px" }}>
-                                    <Paper style={{ display: "flex", justifyContent: "center" }}>
+                                <div style={{ width: "90%", diplay: "flex", justifyContent: "center", margin: "auto" }}>
+                                    <Paper className="paper-tabs">
                                         <Tabs
                                             value={value}
                                             indicatorColor="primary"
@@ -137,59 +348,54 @@ function Surveys(props) {
                                             onChange={handleChange}
                                             aria-label="disabled tabs example"
                                         >
-                                            <Tab label="Checkbox" />
-                                            <Tab label="Text" />
-                                            <Tab label="Dropdown" />
+                                            <Tab onClick={() => { setQuestionIndex(-1) }} label="Checkbox" />
+                                            <Tab onClick={() => { setQuestionIndex(-1) }} label="Text" />
+                                            <Tab onClick={() => { setQuestionIndex(-1) }} label="Dropdown" />
                                         </Tabs>
                                     </Paper>
-                                </Paper>
-
-                                {/* title */}
-
-                                <Paper elevation={3} style={{ display: "flex", justifyContent: "center", marginBottom: "10px", textAlign: "center" }}>
-                                    <div style={{ display: "flex", justifyContent: "center", textAlign: "center" }}>
-                                        <TextField id="standard-basic" label="Title" style={{ width: "90%", textAlign: "center" }} /><br></br>
-                                    </div>
-                                </Paper>
-
-
+                                </div>
                                 {/* question builder */}
-
                                 <Paper elevation={3} style={{ marginBottom: "10px" }}>
+                                    <div className="paper-title">
+                                        <div style={{ display: "flex", justifyContent: "center", textAlign: "center" }}>
+                                            <TextField id="standard-basic" value={title} onChange={(event) => { setTitle(event.target.value) }} label="Title" className="text-title" /><br></br>
+                                        </div>
+                                    </div>
+                                    <div className="paper-title">
+                                        <TextField style={{ width: "50%", textAlign: "center" }} id="standard-basic" value={question} onChange={(event) => { setQuestion(event.target.value) }} label="Question" /><br></br>
+                                    </div>
                                     {checkMode()}
-                                    <div style={{ display: "flex", justifyContent: "center" }}>
-                                        <Button variant="contained" color="secondary">
+                                    <div className="button-build">
+                                        <Button onClick={handleBuild} variant="contained" color="secondary">
                                             Build
                                         </Button>
+                                        <Button onClick={handleClear} variant="contained" color="secondary">
+                                            Clear
+                                        </Button>
+                                    </div>
+                                    <div className="button-build">
+                                        <button onClick={handleSave}>save</button>
                                     </div>
                                 </Paper>
+                                <div style={{ paddingBottom: "20px", justifyContent: "center", textAlign: "center", marginBottom: "50px" }}>
+                                    <h1 style={{ marginBottom: "50px" }}>{title}</h1>
 
-                                {/* survey */}
-
-                                <Paper elevation={3} style={{ display: "flex", justifyContent: "center" }}>
-                                    <Checkbox2></Checkbox2>
-                                    <Checkbox2></Checkbox2>
-                                    <div id="1">
-                                        edit
-                                    </div>
-                                </Paper>
-                            </>)
-                            : (<Paper elevation={3}>
-                                Surveys
-                            </Paper>)}
+                                    {props.questions ? (props.questions.map((data, index) => (
+                                        mapSurvey(data, index + 1)
+                                    ))) : (<div>no questions</div>)}
+                                </div>
+                            </>) : (<div style={{ marginBottom: "100px" }}><Grid container spacing={2}>{mapSurveys()}</Grid></div>)}
                     </div>
                 </Grid>
             </Grid>
             {/* footer */}
-            <div class="footer" style={{ justifyContent: "center" }}>
-                <HomeIcon fontSize="medium" style={{ color: "grey" }}></HomeIcon>
-                <StarIcon fontSize="medium" style={{ color: "grey" }}></StarIcon>
-                <LocalOfferIcon fontSize="medium" style={{ color: "grey" }}></LocalOfferIcon>
-            </div>
+            <Footer></Footer>
+            <ScrollArrow></ScrollArrow>
         </>
     );
 }
 
-
-
-export default Surveys;
+const mapStateToProps = (state) => {
+    return { user: state.user, questions: state.questions }
+}
+export default connect(mapStateToProps)(Surveys);

@@ -1,20 +1,12 @@
+//dependencies
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+//components
 import TextField from '@material-ui/core/TextField';
-
+//css
 import './index.css'
-const useStyles = makeStyles(() => ({
-    centerAdornment: {
-      marginLeft: "50%" // or your relevant measure
-    },
-    centerText: {
-      textAlign: "center"            
-    }
-  }));
-export default function TextBox(props) {
 
-    const style = useStyles();
-    const [name, setName] = useState("")
+export default function TextBox(props) {
     useEffect(() => {
        
     }, [])

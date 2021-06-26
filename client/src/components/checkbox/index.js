@@ -1,14 +1,16 @@
+//dependency
 import React, { useState, useEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
+//components
 import FormLabel from '@material-ui/core/FormLabel';
 import FormControl from '@material-ui/core/FormControl';
 import FormGroup from '@material-ui/core/FormGroup';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Checkbox from '@material-ui/core/Checkbox';
 import CreateIcon from '@material-ui/icons/Create';
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
-//check local storage for 
+//css
+import './index.css'
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -26,33 +28,25 @@ export default function CheckboxesGroup(props) {
   });
 
   useEffect(() => {
-    console.log(state)
   }, [state])
 
   const handleChange = (event) => {
-    console.log(event.target.id)
     setState({ ...state, [event.target.name]: event.target.checked });
   };
-  const check = (event) => {
-    event.stopPropagation();
-    console.log(event.target.id)
-  }
 
   const keys = Object.keys(state)
-  let i = props.index - 1;
 
   return (
     <>
       <div className={classes.root}>
 
-        {props.view ? (<><div style={{display:"flex"}}><h3>{props.index}</h3><h3 style={{color:"orange"}}>{"|   "}</h3><h3>{props.title}</h3></div></>) : (<><h3>{props.index + ") " + props.title}</h3></>)}
-
-        <FormControl component="fieldset" className={classes.formControl} style={{marginTop:0}}>
+        {props.view ? (<><div style={{ display: "flex" }}><h3>{props.index}</h3><h3 style={{ color: "orange" }}>{"|   "}</h3><h3>{props.title}</h3></div></>)
+          : (<><h3>{props.index + ") " + props.title}</h3></>)}
+        <FormControl component="fieldset" className={classes.formControl} style={{ marginTop: 0 }}>
           <FormLabel component="legend"></FormLabel>
           <FormGroup>
             <FormControlLabel
-            //  "rgb(30, 136, 229"
-              control={<Checkbox style={{ color: "orange" }} checked={state[keys[0]]} onChange={handleChange} name={keys[0]} />}
+              control={<Checkbox style={{ color: "orange" }}  checked={state[keys[0]]} onChange={handleChange} name={keys[0]} />}
               label={props.choice[0]}
             />
             <FormControlLabel
