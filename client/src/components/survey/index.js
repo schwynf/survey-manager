@@ -245,7 +245,7 @@ function Surveys(props) {
         console.log(event.target.id)
         let index = parseInt(event.target.id);
         let user = JSON.parse(localStorage.getItem('user'));
-        user.surveys.splice(parseInt(index), index + 1);
+        user.surveys.splice(index, 1);
         console.log(user.surveys)
         localStorage.setItem('user', JSON.stringify(user));
         props.dispatch({ type: 'ADD_USER', payload: user })
