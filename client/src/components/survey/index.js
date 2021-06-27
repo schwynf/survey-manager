@@ -321,14 +321,14 @@ function Surveys(props) {
     return (
         <>
             <Header></Header>
-            <div id="top-nav" style={{ backgroundColor: "yellow", justifyContent: "center", textAlign: "center" }}>
-                <div onClick={() => { setChoiceName("Create") }} style={{ backgroundColor: "yellow", margin: "auto", textAlign: "center" }}>Create</div>
+            <div id="top-nav" style={{ justifyContent: "center", textAlign: "center" }}>
+                <div onClick={() => { setChoiceName("Create") }} style={{margin: "auto", textAlign: "center" }}>Create</div>
                 <div style={{ margin: "auto", width: "150px", height: "20px", borderLeft: "2px solid black", borderRight: "2px solid black", textAlign: "center" }}>Home</div>
-                <div onClick={() => { setChoiceName("Surveys") }} style={{ margin: "auto" }}>View</div>
+                <div onClick={() => { setChoiceName("Surveys") }} style={{ margin: "auto" }}>Overview</div>
             </div>
             <Grid container spacing={0}>
                 <SideBar checkSurveyMode={checkSurveyMode}></SideBar>
-                <Grid id="grid-box-content" item xs={12} md={10} p={10} style={{ backgroundColor: "rgb(218, 216, 216)", minHeight: "94vh" }}>
+                <Grid id="grid-box-content" item xs={12} md={10} p={10} style={{ backgroundColor: "rgb(218, 216, 216)", minHeight: "88vh" }}>
                     <Breadcrumbs aria-label="breadcrumb" mb={5}>
                         <Link color="inherit" href="/">
                             Dashboard
@@ -366,7 +366,7 @@ function Surveys(props) {
                                     </div>
                                     {checkMode()}
                                     <div className="button-build">
-                                        <Button onClick={handleBuild} variant="contained" color="secondary">
+                                        <Button onClick={handleBuild} variant="contained" color="primary">
                                             Build
                                         </Button>
                                         <Button onClick={handleClear} variant="contained" color="secondary">
@@ -374,7 +374,7 @@ function Surveys(props) {
                                         </Button>
                                     </div>
                                     <div className="button-build">
-                                        <button onClick={handleSave}>save</button>
+                                        <Button variant="contained" onClick={handleSave}>save</Button>
                                     </div>
                                 </Paper>
                                 <div style={{ paddingBottom: "20px", justifyContent: "center", textAlign: "center", marginBottom: "50px" }}>

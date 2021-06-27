@@ -6,6 +6,7 @@ import Survey from './components/survey/index.js';
 import checkbox from './components/checkbox/index.js';
 import Login from './components/login/index.js';
 import View from './components/view/index.js';
+import Account from './components/account/index.js';
 //components
 import './App.css'
 
@@ -25,6 +26,7 @@ function App(props) {
           <Route exact path="/login" component={Login} />
           <Route exact path="/survey" component={Survey} />
           <Route exact path="/view/:id" component={View} />
+          <Route exact path="/account" component={Account} />
           <Route component={Survey} />
         </Switch>
     </Router>

@@ -53,6 +53,11 @@ function Login(props) {
         if(props.user){
             history.push('/surveys2')
         }
+        
+        if(JSON.parse(localStorage.getItem('user'))){
+            let user = JSON.parse(localStorage.getItem('user'))
+            setEmail(user.email)
+        }
     },[props.user])
 
 
@@ -90,7 +95,7 @@ function Login(props) {
                             fullWidth
                             style={{ backgroundColor: "white" }}
                             id="email"
-                            value="test@gmail.com"
+                            value={email}
                             onChange={(event)=>{setEmail(event.target.value)}}
                             label="Email Address"
                             name="email"

@@ -45,7 +45,7 @@ function Header(props) {
                         open={Boolean(anchorEl)}
                         onClose={handleClose}
                     >
-                        {props.user ?(<div><MenuItem onClick={logout}>Logout</MenuItem><MenuItem onClick={handleClose}>My account</MenuItem><MenuItem>{props.user.email}</MenuItem></div>):(<MenuItem>Login</MenuItem>)}
+                        {props.user ?(<div><MenuItem onClick={logout}>Logout</MenuItem><MenuItem onClick={()=>{history.push('/')}}>Home</MenuItem><MenuItem onClick={()=>{history.push('/account')}}>My account</MenuItem><MenuItem>{props.user.email}</MenuItem></div>):(<MenuItem>Login</MenuItem>)}
                     </Menu>
                 </div>
             </div>
