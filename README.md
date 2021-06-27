@@ -2,18 +2,16 @@
 https://survey-app-manager.herokuapp.com/
 # Getting Started
 *Create tab leads to building survey.
-    --Add question
-    --Edit question
-    --delete question
+--Build button adds question to survey
+--Save button saves survey to local storage
+--Clear button clears all questions in survey
+
 *Overview tab leads to managing surveys.
-    --edit survey
-    --delete survey
-    --view survey
+--view survey (click on image)
 
+*Account page for managing user email
 
-*Account page to manage user email
 *Login page to login
-
 
 *Bugs
 --Click on the right side of icons for the onClick function to work
