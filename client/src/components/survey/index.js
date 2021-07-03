@@ -30,6 +30,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever';
 import './index.css'
 //images
 import EssayImage from '../../images/essay.jpg';
+let d;
 
 const useStyles = makeStyles((theme) => ({
     root: {
